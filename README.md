@@ -1,2 +1,2 @@
 # dotfiles
-public config files
+config files
