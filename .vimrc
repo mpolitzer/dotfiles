@@ -1,5 +1,7 @@
-" nvim "{{{ ====================================================================
+" global "{{{ ==================================================================
 set nocompatible
+
+set completeopt   =menuone,noselect
 scriptencoding     utf-8
 set encoding      =utf-8
 let mapleader     =','
@@ -9,16 +11,12 @@ set textwidth     =80
 set colorcolumn   =81
 set bg            =dark
 set nowrap     " keep the line going
-"
-"set completeopt  -=preview " disable preview window
-"set noshowmode " don't show --INSERT--
+"set cedit      " vim mode in ex
+set noswapfile
 
 autocmd BufRead,BufNewFile *.vim set foldmethod=marker
 
-" vimdiff update
-map <leader>du :diffupdate<cr><cr>
-
-" sane ESC on terminal mode
+" sane ESC on nvim terminal mode
 "tnoremap <esc> <C-\><C-n>
 
 colorscheme OceanicNext
@@ -51,6 +49,9 @@ map <leader>pe :lprev<cr>
 " navigate buffers
 map <leader>nb :bn<cr>
 map <leader>pb :bp<cr>
+
+"noremap <ctrl>j <esc>/<++><enter>"_c4l
+"inoremap @if if<space>()<esc>msa<space>{<enter>}<enter><++><esc>`si
 
 " unsorted functions "{{{ ======================================================
 function!NeatFoldText()
@@ -87,23 +88,35 @@ endfunction
 "}}}
 
 " plug "{{{ ====================================================================
-"call plug#begin('~/.vim/plug')
+"call plug#begin('~/.vim/vim-plug')
 call plug#begin('~/.config/nvim/plug')
 "Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } | Plug 'zchee/deoplete-clang'
+"Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer --system-libclang --system-boost' }
+Plug 'maralla/completor.vim'
+Plug 'maralla/completor-neosnippet'
+"Plug 'jeaye/color_coded'            " C better hi (too slow!)
 Plug 'Shougo/echodoc.vim'
 Plug 'Shougo/neosnippet' | Plug 'Shougo/neosnippet-snippets'
-Plug 'junegunn/vim-easy-align'
+"Plug 'junegunn/vim-easy-align'
+"Plug 'godlygeek/tabular'
 Plug 'junegunn/vim-plug'
 "Plug 'scrooloose/syntastic'
 Plug 'elentok/plaintasks.vim'
-Plug 'jceb/vim-orgmode'
-Plug 'tpope/vim-speeddating'
+"Plug 'jceb/vim-orgmode'
+"Plug 'tpope/vim-speeddating'
 Plug 'dhruvasagar/vim-table-mode'
+"Plug 'tikhomirov/vim-glsl'
 call plug#end()
 "}}}
 " plug-conf "{{{ ===============================================================
+" vim-latex "{{{----------------------------------------------------------------
+filetype plugin on
+"set grepprg=grep\ -nH\ $*
+"let g:tex_flavor='latex'
+"}}}
 " echodoc "{{{------------------------------------------------------------------
-"let g:echodoc_enable_at_startup = 1
+set noshowmode
+let g:echodoc_enable_at_startup = 1
 "}}}
 " deoplete (neovim only) "{{{---------------------------------------------------
 "let g:deoplete#enable_at_startup           = 1
@@ -125,41 +138,54 @@ imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
 "}}}
-" table-mode"{{{----------------------------------------------------------------
+" completor "{{{----------------------------------------------------------------
+"let g:completor_refresh_always = 0
+set cot-=preview
+"let g:completor_clang_binary = "/usr/lib/llvm/5/bin/clang"
+"inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<C-x>\<C-u>\<C-p>"
+"}}}
+" table-mode"{{{ ---------------------------------------------------------------
 let g:table_mode_corner='|'
 "}}}
-" syntastic "{{{----------------------------------------------------------------
+" syntastic "{{{ ---------------------------------------------------------------
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list            = 1
 let g:syntastic_check_on_open            = 1
 let g:syntastic_check_on_wq              = 0
-let g:syntastic_error_symbol             = "\u2694" " crossed swords
-let g:syntastic_warning_symbol           = "\u26A0" " warning sign
+let g:syntastic_error_symbol             = "☓"
+let g:syntastic_warning_symbol           = "⚠"
 let g:syntastic_enable_balloons          = 1
+"
+"let g:syntastic_error_symbol             = " "\u2694" " crossed swords
+"let g:syntastic_warning_symbol           = " "\u26A0" " warning sign
+"
+"let g:syntastic_c_checkers               = ["clang_tidy", "gcc"]
+"
+"let g:syntastic_c_clang_tidy_tail        = "2>/dev/null"
+"let g:syntastic_c_clang_tidy_args        = join(["",
+"                                           \"-I/home/tzm/dev/t/",
+"                                           \"-I/usr/include/",
+"                                           \"-I/usr/local/include/",
+"                                           \"-march=native",
+"                                           \"-std=c11",
+"                                           \"-D_POSIX_C_SOURCE 199506L",
+"                                           \""])
 
-let g:syntastic_c_checkers               = ["clang_tidy", "gcc"]
-
-let g:syntastic_c_clang_tidy_tail        = "2>/dev/null"
-let g:syntastic_c_clang_tidy_args        = join(["",
-                                           \"-I/usr/include/",
-                                           \"-I/usr/local/include/",
-                                           \"-I/home/tzm/dev/",
-                                           \""])
-
-let g:syntastic_c_gcc_tail               = g:syntastic_c_clang_tidy_tail
-let g:syntastic_c_gcc_args               = g:syntastic_c_clang_tidy_args
+"let g:syntastic_c_gcc_tail               = g:syntastic_c_clang_tidy_tail
+"let g:syntastic_c_gcc_args               = g:syntastic_c_clang_tidy_args
 "}}}
-" vim-easy-align "{{{-----------------------------------------------------------
+" vim-easy-align "{{{ ----------------------------------------------------------
 xmap al <Plug>(EasyAlign)
 nmap al <Plug>(EasyAlign)
 "}}}
 "}}}
-" TODO (plaintasks) "{{{ =======================================================
+" TODO (plaintasks) "{{{ -------------------------------------------------------
 function! s:todo_fmt()
 	setlocal tabstop    =2
 	setlocal softtabstop=2
 	setlocal shiftwidth =2
 	setlocal foldmethod =indent
+	setlocal textwidth=0 wrapmargin=0
 endfunction
 autocmd BufRead,BufNewFile todo,*.tasks,TODO  call s:todo_fmt()
 "}}}
@@ -195,6 +221,10 @@ function! s:linux_fmt()
 	"   t - autowrap using textwidth,
 	setlocal formatoptions=croqlnt
 
+	" clang-format
+	map <C-I> :py3f /usr/lib64/llvm/5/share/clang/clang-format.py<cr>
+	"imap <C-I> <c-o>:py3f /usr/lib64/llvm/5/share/clang/clang-format.py<cr>
+
 	" clean autocomplete window.
 	autocmd InsertLeave  * if pumvisible() == 0|pclose|endif
 	if has("cscope")
@@ -211,8 +241,17 @@ function! s:linux_fmt()
 	endif
 endfunction
 
+function! s:html_fmt()
+"	setlocal fdm=identation
+	setlocal ts=2 sts=2 sw=2 tw=80
+endfunction
+
 " -----------------------------------------------------------------------------
-autocmd BufRead,BufNewFile *.h,*.c,*.inl call s:linux_fmt() "    c-mode
+autocmd BufRead,BufNewFile *.cpp,*.h,*.c,*.inl call s:linux_fmt() "     c-mode
+autocmd BufRead,BufNewFile *.tex               set iskeyword+=:   " latex-mode
+
+autocmd BufRead,BufNewFile *.vs,*.fs     set filetype=glsl  " glsl-mode
+autocmd BufRead,BufNewFile *.html,*.htm  call s:html_fmt()  " html
 
 "}}}
 

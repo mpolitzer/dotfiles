@@ -1,19 +1,19 @@
 if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
-
-PS1="\[\033[01;32m\]\$\[\033[00m\] "
-export EDITOR="nvim"
-export TERMINAL="uxterm"
-eval $(keychain --eval --noask --agents ssh id_rsa)
+set editing-mode vi
+PS1="\[\033[01;32m\]$\[\033[00m\] "
+export EDITOR="vim"
+export TERMINAL="st"
+#export TERMINAL="uxterm"
+eval $(keychain --quiet --eval --noask --agents ssh id_rsa) &
 #eval `keychain --eval --noask --agents ssh id_rsa`
 
 # smbclient (mount) example
 # mount -t cifs //SERVER/sharename /mnt/mountpoint -o user=username,password=password,workgroup=workgroup,ip=serverip
 
 alias o="xdg-open"
-alias e="vim"
-#alias e="nvim"
+alias e="$EDITOR -p"
 alias dd="dd status=progress"
 alias m="make"
 alias axel="axel -n 4 -a"
@@ -21,23 +21,31 @@ alias youtube-dl="youtube-dl --external-downloader aria2c"
 alias cpr="rsync -a --progress"
 alias grep="egrep --color=auto"
 alias isis="wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Labcenter\ Electronics/Proteus\ 7\ Professional/BIN/ISIS.EXE"
+alias ls="ls --color"
 alias l="ls --color"
 
 #export TERM=xterm-256color
 export PATH="$HOME/.local/bin/:$PATH"
 export PKG_CONFIG_PATH="~/.local/lib/pkgconfig/"
+#export PREFIX="~/.local"
+# export VIMRUNTIME="/usr/share/vim/vim80:/usr/share/vim/vimfiles:/home/mp/.config/vim/vim80"
 
 # xbps
 export PATH="$PATH:$HOME/.local/xbps/usr/bin"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HOME/.local/lib/:$HOME/.local/lib64/"
 
 # lua
 #export PATH="$PATH:$HOME/.local/openresty/bin:$HOME/.local/openresty/nginx/sbin" # openresty
-eval `luarocks-5.1 path` # luarocks
+#eval `luarocks-5.1 path` # luarocks
 
-PATH="$HOME/.local/usr/bin:$PATH" # arm
-#PATH="$PATH:$HOME/.local/opt/toolchains/arm-none-eabi/bin" # arm
-PATH="$HOME/.local/opt/toolchains/msp430/bin:$PATH" # msp430
-PATH="$HOME/.local/opt/toolchains/avr/bin:$PATH" # avr
+# vulkan
+export LD_LIBRARY_PATH=/home/mp/dev/vulkan/Vulkan-LoaderAndValidationLayers/build/loader:$LD_LIBRARY_PATH
+export VK_LAYER_PATH=/home/mp/dev/vulkan/Vulkan-LoaderAndValidationLayers/build/layers:$VK_LAYER_PATH
+
+PATH="$PATH:$HOME/.local/opt/toolchains/arm-none-eabi/bin" # arm
+PATH="$PATH:$HOME/.local/opt/toolchains/msp430/bin" # msp430
+PATH="$PATH:$HOME/.local/opt/toolchains/avr/bin" # avr
+#PATH="$PATH:$HOME/.local/usr/bin" # arm
 
 export TEXMFCONFIG="$HOME/.config/latex/texmf" # Latex
 
