@@ -38,9 +38,19 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HOME/.local/lib/:$HOME/.local/lib64/"
 #export PATH="$PATH:$HOME/.local/openresty/bin:$HOME/.local/openresty/nginx/sbin" # openresty
 #eval `luarocks-5.1 path` # luarocks
 
-# vulkan
-export LD_LIBRARY_PATH=/home/mp/dev/vulkan/Vulkan-LoaderAndValidationLayers/build/loader:$LD_LIBRARY_PATH
-export VK_LAYER_PATH=/home/mp/dev/vulkan/Vulkan-LoaderAndValidationLayers/build/layers:$VK_LAYER_PATH
+# vulkan [Release]
+export PATH="$HOME/.local/opt/vulkan/release/bin/:$PATH"
+export LD_LIBRARY_PATH="$HOME/.local/opt/vulkan/release/lib64/":$LD_LIBRARY_PATH
+export VK_LAYER_PATH="$HOME/.local/opt/vulkan/release/share/vulkan/explicit_layer.d/":$VK_LAYER_PATH
+#export PKG_CONFIG_PATH="$HOME/.local/opt/vulkan/release/lib64/pkgconfig/":$PKG_CONFIG_PATH
+export PKG_CONFIG_PATH="$HOME/.local/opt/vulkan/release/lib64/pkgconfig/":$PKG_CONFIG_PATH
+
+# vulkan [Debug]
+#export PATH="$HOME/.local/opt/vulkan/debug/bin/:$PATH"
+#export LD_LIBRARY_PATH="$HOME/.local/opt/vulkan/debug/lib64/":$LD_LIBRARY_PATH
+#export VK_LAYER_PATH="$HOME/.local/opt/vulkan/debug/share/vulkan/explicit_layer.d/":$VK_LAYER_PATH
+#export PKG_CONFIG_PATH="$HOME/.local/opt/vulkan/debug/lib64/pkgconfig/":$PKG_CONFIG_PATH
+
 
 PATH="$PATH:$HOME/.local/opt/toolchains/arm-none-eabi/bin" # arm
 PATH="$PATH:$HOME/.local/opt/toolchains/msp430/bin" # msp430
@@ -64,8 +74,28 @@ t() {
 	#i3-sensible-terminal &
 }
 
+k() {
+	k() {
+		for cmd in "$@"; do
+			${cmd}
+		done
+	}
+	k $@
+	kitty &
+	#uxterm &
+	#lxterminal &
+	#i3-sensible-terminal &
+}
+
 load-keychain() {
 	eval $(keychain --quiet --eval --agents ssh id_rsa)
+}
+
+# open vim in a adequate layout for t modules
+et() {
+	module=$1
+	cd ~/dev/t/
+	vim -c ":e t/$module.h|:bel vsplit tests/$module-t.c|:bel terminal"
 }
 
 try-wm() {
