@@ -1,3 +1,10 @@
+" + respect XDG ---------------------------------------------------------------
+	set undodir=$XDG_CACHE_HOME/vim/undo
+	set directory=$XDG_CACHE_HOME/vim/swap
+	set backupdir=$XDG_CACHE_HOME/vim/backup
+	set viminfo+='1000,n$XDG_CACHE_HOME/vim/viminfo
+	set runtimepath=$XDG_CONFIG_HOME/vim,$VIMRUNTIME,$XDG_CONFIG_HOME/vim/after
+	set packpath=$XDG_CONFIG_HOME/vim/
 " + colors --------------------------------------------------------------------
 	set t_Co=256
 	set colorcolumn=80
@@ -6,6 +13,10 @@
 	"colorscheme campfire
 	set notermguicolors
 " + global --------------------------------------------------------------------
+	set enc=utf-8
+	set fileencoding=utf-8
+	set fileencodings=ucs-bom,utf8,prc
+
 	"filetype enable " auto (via plug)
 	"syntax enable   " auto (via plug)
 	set nowrap
@@ -21,6 +32,7 @@
 	set listchars=tab:·\ ,trail:.,extends:>,precedes:<,nbsp:?
 	set list
 
+
 	" navigate errors
 	nmap <leader>ne :lnext<cr>
 	nmap <leader>pe :lprev<cr>
@@ -30,11 +42,17 @@
 	nmap <leader>pb :bp<cr>
 
 	nmap <leader>m :make<cr><cr><cr>
-	nmap <leader>s :wa<Bar>exe "mksession!" . v:this_session<cr>:so ~/.vim/sessions/
+	nmap <leader>s :wa<Bar>exe "mksession!" . v:this_session<cr>:so $XDG_CACHE_HOME/vim/sessions/
+
+	function! Append(c)
+		exec 'norm '.(&cc - strlen(getline('.'))).'A'.nr2char(a:c)
+	endfunction
+
+	nnoremap <expr> m ':call Append('.getchar().")\<CR>"
 " + fold ----------------------------------------------------------------------
-	"setlocal foldenable
-	setlocal foldmethod=indent
-	"setlocal foldmethod=expr    " too slow for ~1k+ fules
+	setlocal nofoldenable
+	"setlocal foldmethod=indent
+	"setlocal foldmethod=expr    " too slow for ~1k+ files
 	setlocal foldexpr=T_cfold(v:lnum)
 	"setlocal foldcolumn=1
 	nnoremap <leader>z :echom T_cfold(line("."))<cr>
@@ -49,37 +67,29 @@
 	set hlsearch
 	nnoremap <ESC> :nohlsearch<cr>
 " + plugins -------------------------------------------------------------------
-	call plug#begin('~/.vim/plug/')
-	Plug 'junegunn/vim-plug'
-	Plug 'Shougo/echodoc.vim'
+	packadd minpac
+	call minpac#init()
+	call minpac#add('k-takata/minpac', {'type': 'opt'})
+		command! PackUpdate packadd minpac | source $MYVIMRC | call minpac#update()
+		command! PackClean  packadd minpac | source $MYVIMRC | call minpac#clean()
+	call minpac#add('Shougo/echodoc.vim')
 		set noshowmode
 		let g:echodoc_enable_at_startup=1
-	Plug 'mpolitzer/plaintasks.vim'
-	Plug 'scrooloose/syntastic'
-	Plug 'scrooloose/nerdtree'
-		nnoremap <leader>t :NERDTreeToggle<cr>
-	"Plug 'Shougo/deol.nvim'
-	"	nmap  <C-t> :Deol<cr>
-	"Plug 'rhysd/vim-clang-format'
-	Plug 'Shougo/neosnippet' | Plug 'Shougo/neosnippet-snippets'
-	Plug 'maralla/completor.vim'
-		"nmap <C-k> <Plug>CompletorCppJumpToPlaceholder
-		"imap <C-k> <Plug>CompletorCppJumpToPlaceholder
-		"
-	Plug 'maralla/completor-neosnippet'
-		"imap <C-j> <Plug>(neosnippet_expand_or_jump)
-		"smap <C-j> <Plug>(neosnippet_expand_or_jump)
-
+	call minpac#add('mpolitzer/plaintasks.vim')
+	call minpac#add('scrooloose/syntastic')
+	call minpac#add('scrooloose/nerdtree')
+		nnoremap <leader>T :NERDTreeToggle<cr>
+	call minpac#add('rhysd/vim-clang-format')
+	call minpac#add('Shougo/neosnippet')
+	"	call minpac#add('Shougo/deoplete.nvim')
+		call minpac#add('Shougo/neosnippet-snippets')
+	call minpac#add('maralla/completor.vim')
+	"	nmap <C-k> <Plug>CompletorCppJumpToPlaceholder
+	"	imap <C-k> <Plug>CompletorCppJumpToPlaceholder
+	call minpac#add('maralla/completor-neosnippet')
 		" <C-k> For completor and snippets
 		smap <C-k> <Plug>CompletorCppJumpToPlaceholder<Plug>(neosnippet_expand_or_jump)
 		imap <C-k> <Plug>CompletorCppJumpToPlaceholder<Plug>(neosnippet_expand_or_jump)
-
-	"Plug 'maralla/validator.vim'
-	"	let g:validator_c_checkers = ['clang-tidy']
-	"	let g:validator_auto_open_quickfix = 1
-	"	let g:validator_permament_sign = 1
-	"	let g:validator_debug = 1
-	call plug#end()
 " + functions -----------------------------------------------------------------
 	" cfold
 		function! T_cfold(lnum)
@@ -132,6 +142,7 @@
 			"setlocal foldmethod=syntax
 			setlocal ts=8 sts=8 sw=8 tw=80
 
+			setlocal nofoldenable
 			setlocal noexpandtab     " Don't expand tabs to spaces.
 			setlocal cindent         " Enable automatic C program indenting.
 			setlocal cinoptions+=t0  " Don't outdent function return types.
@@ -141,6 +152,10 @@
 
 			" completor plugin
 			noremap gd :call completor#do('definition')<CR>
+
+			"" <C-k> For completor and snippets
+			"smap <C-k> <Plug>CompletorCppJumpToPlaceholder<Plug>(neosnippet_expand_or_jump)
+			"imap <C-k> <Plug>CompletorCppJumpToPlaceholder<Plug>(neosnippet_expand_or_jump)
 
 			" Setup formatoptions:
 			"   c - auto-wrap comments to textwidth
@@ -152,8 +167,11 @@
 			"   t - autowrap using textwidth                         (disabled)
 			setlocal formatoptions=croqln
 
+			" unit tests
+			nmap <leader>u :make test<cr><cr><cr>
+
 			" clang-format
-			map <leader>f :py3f /usr/lib64/llvm/5/share/clang/clang-format.py<cr>
+			map <leader>f :py3f /usr/lib64/llvm/6/share/clang/clang-format.py<cr>
 			"imap <C-I> <c-o>:py3f /usr/lib64/llvm/5/share/clang/clang-format.py<cr>
 
 			" clean autocomplete window.
@@ -185,14 +203,15 @@
 		function! T_vimrc_fmt()
 			setlocal foldmethod=expr
 		endfunction
-		autocmd BufRead,BufNewFile *.vimrc      call T_vimrc_fmt()
+		autocmd BufRead,BufNewFile vimrc,*.vimrc call T_vimrc_fmt()
 	" Makefile
 		function! T_make_fmt()
 			setlocal foldmethod=expr
 		endfunction
-		autocmd BufRead,BufNewFile Makefile     call T_make_fmt()
+		autocmd BufRead,BufNewFile Makefile call T_make_fmt()
 	" todo
 		function! T_todo_fmt()
+			setlocal expandtab
 			setlocal tabstop    =2
 			setlocal softtabstop=2
 			setlocal shiftwidth =2
@@ -200,4 +219,4 @@
 			setlocal wrapmargin =0
 			setlocal foldmethod =expr
 		endfunction
-		autocmd BufRead,BufNewFile todo,*.todo  call T_todo_fmt()
+		autocmd BufRead,BufNewFile todo,*.todo call T_todo_fmt()
