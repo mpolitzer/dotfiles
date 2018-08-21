@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+for f in */; do
+	echo "# $f"
+	pushd . > /dev/null
+	cd $f && ./install
+	popd > /dev/null
+done

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+D=~/.config/vim/
+mkdir -p $D
+ln -s $PWD/vimrc $D

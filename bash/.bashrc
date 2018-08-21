@@ -1,5 +1,9 @@
 [[ $- != *i* ]] && return
 
+# don't know why the terminal is broken, but this with /usr/bin/env seems to fix it
+export LANG="en_US.UTF-8"
+export LC_COLLATE="C"
+
 export EDITOR="vim"
 export TERMINAL="st"
 eval $(keychain --quiet --eval --noask --agents ssh id_rsa)
@@ -29,7 +33,7 @@ t() {
 		done
 	}
 	u $@
-	st &
+	/usr/bin/env st &
 }
 
 load-keychain() {

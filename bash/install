@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+D=~/
+ln -s $PWD/.bashrc $D
